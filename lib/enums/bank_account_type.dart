@@ -1,0 +1,4 @@
+enum BankAccountType {
+  CARD,
+  DEPOSIT,
+}
