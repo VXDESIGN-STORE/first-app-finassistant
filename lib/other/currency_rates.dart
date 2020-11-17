@@ -13,18 +13,25 @@ class CurrencyRates {
   static loadRates() async {
     var rates = <CurrencyRate>[];
 
-    for (var type in CurrencyType.values) {
-      var other = CurrencyType.values.where((another) => another != type);
-      var query = "https://api.exchangeratesapi.io/latest?base=${type.getShortName()}&symbols=${other.map((e) => e.getShortName()).join(",")}";
-      var response = await http.get(query);
-      Map<String, dynamic> map = jsonDecode(response.body);
+    var client = http.Client();
+    try {
+      for (var type in CurrencyType.values) {
+        var other = CurrencyType.values.where((another) => another != type);
+        var query = "https://api.exchangeratesapi.io/latest?base=${type.getShortName()}&symbols=${other.map((e) => e.getShortName()).join(",")}";
+        var response = await client.get(query);
+        Map<String, dynamic> map = jsonDecode(response.body);
 
-      if (map["base"] == type.getShortName()) {
-        other.forEach((element) {
-          var rate = map["rates"][element.getShortName()] as double;
-          rates.add(CurrencyRate(type, element, rate));
-        });
+        if (map["base"] == type.getShortName()) {
+          other.forEach((element) {
+            var rate = map["rates"][element.getShortName()] as double;
+            rates.add(CurrencyRate(type, element, rate));
+          });
+        }
       }
+    } catch (e) {
+      rates = [];
+    } finally {
+      client.close();
     }
 
     _rates = rates;

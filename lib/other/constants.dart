@@ -27,7 +27,7 @@ class AppSharedKey {
   static const kCurrencyRatesLastDateUpdate = "currencyRatesLastDateUpdate";
   static const kActiveType = "activeType";
   static const kSummaryValue = "summaryValue";
-  static const kIncomeValues = "incomeValues";
-  static const kOutcomeValues = "outcomeValues";
+  static const kIncomeTransactions = "incomeValues";
+  static const kOutcomeTransactions = "outcomeValues";
   static const kAccounts = "accounts";
 }
