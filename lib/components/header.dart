@@ -1,5 +1,7 @@
+import 'package:first_app_finassistant/components/bank_account_row.dart';
 import 'package:first_app_finassistant/components/currencies_row.dart';
 import 'package:first_app_finassistant/components/money_value_row.dart';
+import 'package:first_app_finassistant/entities/bank_account.dart';
 import 'package:first_app_finassistant/entities/money_value.dart';
 import 'package:first_app_finassistant/enums/currency_type.dart';
 import 'package:first_app_finassistant/other/constants.dart';
@@ -35,23 +37,18 @@ class Header extends Column {
     Widget item,
     CurrencyType activeType,
     String title,
+    Widget customTitle,
     Function(CurrencyType) changeCurrencyType,
   })  : assert(item != null),
         assert(activeType != null),
+        assert(title == null && customTitle != null || title != null && customTitle == null),
         assert(changeCurrencyType != null),
         super(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: EdgeInsets.only(left: 30, bottom: 10),
-              child: Text(
-                title,
-                style: TextStyle(
-                  color: AppColor.kTextOnLightColor,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
+              child: customTitle == null ? getTitleWidget(title) : customTitle,
             ),
             Padding(
               padding: EdgeInsets.only(left: 30, top: 10, bottom: 10),
@@ -63,6 +60,17 @@ class Header extends Column {
             ),
           ],
         );
+
+  static Text getTitleWidget(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        color: AppColor.kTextOnLightColor,
+        fontSize: 24,
+        fontWeight: FontWeight.w300,
+      ),
+    );
+  }
 }
 
 class SummaryHeader extends Header {
@@ -139,6 +147,26 @@ class IncomeOutcomeHeader extends Header {
           ),
           activeType: activeType,
           title: AppText.kIncomeOutcomeHeaderTitle,
+          changeCurrencyType: changeCurrencyType,
+        );
+}
+
+class AccountHeader extends Header {
+  AccountHeader({
+    Key key,
+    BankAccount account,
+    MoneyValue value,
+    CurrencyType activeType,
+    Function(CurrencyType) changeCurrencyType,
+  }) : super(
+          key: key,
+          item: HeaderMoneyValueRow(
+            value,
+            key: key,
+            activeType: activeType,
+          ),
+          activeType: activeType,
+          customTitle: HeaderBankAccountRow(account),
           changeCurrencyType: changeCurrencyType,
         );
 }

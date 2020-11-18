@@ -86,3 +86,18 @@ class BlockMoneyValueRow extends MoneyValueRow {
           spaceSize: 6,
         );
 }
+
+class SmallBlockMoneyValueRow extends MoneyValueRow {
+  SmallBlockMoneyValueRow(
+    MoneyValue value, {
+    Key key,
+    CurrencyType activeType,
+  }) : super(
+          value,
+          key: key,
+          activeType: activeType,
+          valueFontSize: 24,
+          signFontSize: 18,
+          spaceSize: 5,
+        );
+}

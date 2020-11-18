@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:first_app_finassistant/entities/bank_account.dart';
 import 'package:first_app_finassistant/entities/money_value.dart';
+import 'package:first_app_finassistant/enums/currency_type.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -49,4 +51,31 @@ class Transaction {
         "date": _date,
         "description": _description,
       });
+}
+
+extension TransactionIterable on Iterable<Transaction> {
+  MoneyValue sum(CurrencyType type) {
+    var result = 0.0;
+    for (var transaction in this) {
+      var value = transaction.value.getConvertedValue(type);
+      if (transaction.isIncome) {
+        result += value;
+      } else {
+        result -= value;
+      }
+    }
+    return MoneyValue(result, type);
+  }
+
+  MoneyValue sumOfIncome(CurrencyType type) {
+    return this.where((transaction) => transaction.isIncome).map((transaction) => transaction.value).sum(type);
+  }
+
+  MoneyValue sumOfOutcome(CurrencyType type) {
+    return this.where((transaction) => !transaction.isIncome).map((transaction) => transaction.value).sum(type);
+  }
+
+  MoneyValue sumOfAccount(CurrencyType type, BankAccount account) {
+    return this.where((transaction) => transaction.bankAccountId == account.id).sum(type);
+  }
 }

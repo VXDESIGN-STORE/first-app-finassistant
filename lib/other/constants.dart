@@ -28,7 +28,6 @@ class AppText {
 class AppSharedKey {
   static const kCurrencyRatesLastDateUpdate = "currencyRatesLastDateUpdate";
   static const kActiveType = "activeType";
-  static const kIncomeTransactions = "incomeTransactions";
-  static const kOutcomeTransactions = "outcomeTransactions";
+  static const kTransactions = "Transactions";
   static const kAccounts = "accounts";
 }

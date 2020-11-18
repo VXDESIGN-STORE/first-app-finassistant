@@ -2,12 +2,12 @@ import 'package:first_app_finassistant/other/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class EditBankAccountScreen extends StatefulWidget {
+class EditTransactionScreen extends StatefulWidget {
   @override
-  _EditBankAccountScreenState createState() => _EditBankAccountScreenState();
+  _EditTransactionScreenState createState() => _EditTransactionScreenState();
 }
 
-class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
+class _EditTransactionScreenState extends State<EditTransactionScreen> {
   static const String _keyPrefix = "edit_account";
 
   @override

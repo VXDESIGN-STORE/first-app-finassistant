@@ -5,30 +5,48 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BankAccountRow extends Row {
-  BankAccountRow(BankAccount account) : super(
-    children: [
-      Padding(
-        padding: EdgeInsets.only(right: 10),
-        child: FaIcon(
-          getIcon(account),
-          size: 24,
-          color: AppColor.kTextOnLightColor,
-        ),
-      ),
-      Text(
-        account.name,
-        style: TextStyle(
-          color: AppColor.kTextOnLightColor,
-          fontSize: 20,
-          fontWeight: FontWeight.w300,
-        ),
-      ),
-    ],
-  );
+  BankAccountRow(
+    BankAccount account, {
+    double iconFontSize = 24,
+    double textFontSize = 20,
+    double spaceSize = 10,
+  }) : super(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(right: spaceSize),
+              child: FaIcon(
+                getIcon(account),
+                size: iconFontSize,
+                color: AppColor.kTextOnLightColor,
+              ),
+            ),
+            Text(
+              account.name,
+              style: TextStyle(
+                color: AppColor.kTextOnLightColor,
+                fontSize: textFontSize,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+          ],
+        );
 
   static IconData getIcon(BankAccount account) {
-    if (account.type == BankAccountType.CARD) return FontAwesomeIcons.creditCard;
-    if (account.type == BankAccountType.DEPOSIT) return FontAwesomeIcons.university;
+    if (account.bankAccountType == BankAccountType.CARD) return FontAwesomeIcons.creditCard;
+    if (account.bankAccountType == BankAccountType.DEPOSIT) return FontAwesomeIcons.university;
     return FontAwesomeIcons.questionCircle;
   }
+}
+
+class HeaderBankAccountRow extends BankAccountRow {
+  HeaderBankAccountRow(BankAccount account)
+      : super(
+          account,
+          iconFontSize: 28,
+          textFontSize: 24,
+        );
+}
+
+class BlockBankAccountRow extends BankAccountRow {
+  BlockBankAccountRow(BankAccount account) : super(account);
 }

@@ -18,14 +18,14 @@ class MoneyValue {
 
   static MoneyValue fromJson(String json) {
     var map = jsonDecode(json) as Map<String, dynamic>;
-    var value = map.containsKey("value") ? map["value"] as double : 0;
-    var type = map.containsKey("type") ? map["type"] as CurrencyType : CurrencyType.RUR;
+    var value = map.containsKey("value") ? map["value"] as double : 0.0;
+    var type = map.containsKey("type") ? CurrencyType.values[map["type"] as int] : CurrencyType.RUR;
     return MoneyValue(value, type);
   }
 
   String toJson() => jsonEncode({
         "value": _value,
-        "type": _type,
+        "type": _type.index,
       });
 
   double getConvertedValue(CurrencyType type) {

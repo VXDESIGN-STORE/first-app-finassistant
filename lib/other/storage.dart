@@ -22,11 +22,13 @@ class StorageProvider {
   List<Transaction> get transactions => _transactions;
 
   List<Transaction> get orderedTransactions {
+    var result = <Transaction>[];
     if (transactions?.isNotEmpty == true) {
       // desc
-      transactions.sort((transaction1, transaction2) => -transaction1.date.compareTo(transaction2.date));
+      result = transactions.sublist(0);
+      result.sort((transaction1, transaction2) => -transaction1.date.compareTo(transaction2.date));
     }
-    return transactions;
+    return result;
   }
 
   Key get currencyTypeChangeKey => _currencyTypeChangeKey;
@@ -39,13 +41,12 @@ class StorageProvider {
 
   setData(SharedPreferences preferences) {
     summaryType = CurrencyType.values[(preferences.getInt(AppSharedKey.kActiveType) ?? 0)];
-    // _accounts = prefs.getStringList(AppSharedKey.kAccounts)?.map(BankAccount.fromJson)?.toList() ?? [];
-    // _incomeTransactions = prefs.getStringList(AppSharedKey.kIncomeTransactions)?.map(Transaction.fromJson)?.toList() ?? [];
-    // _outcomeTransactions = prefs.getStringList(AppSharedKey.kOutcomeTransactions)?.map(Transaction.fromJson)?.toList() ?? [];
+    // _accounts = preferences.getStringList(AppSharedKey.kAccounts)?.map(BankAccount.fromJson)?.toList() ?? [];
+    // _transactions = preferences.getStringList(AppSharedKey.kTransactions)?.map(Transaction.fromJson)?.toList() ?? [];
     _accounts = [
-      BankAccount.newItem("Sberbank", BankAccountType.CARD, MoneyValue(100, CurrencyType.RUR)),
-      BankAccount.newItem("Tinkoff", BankAccountType.DEPOSIT, MoneyValue(244, CurrencyType.EUR)),
-      BankAccount.newItem("Alfa-Bank", null, MoneyValue(500, CurrencyType.USD)),
+      BankAccount.newItem("Sberbank", BankAccountType.CARD, CurrencyType.RUR),
+      BankAccount.newItem("Tinkoff", BankAccountType.DEPOSIT, CurrencyType.EUR),
+      BankAccount.newItem("Alfa-Bank", null, CurrencyType.USD),
     ];
     _transactions = [
       Transaction.newItem(true, _accounts[0].id, MoneyValue(520, CurrencyType.RUR), DateTime.now().add(Duration(days: -1)), '''Lorem ipsum dolor sit amet,

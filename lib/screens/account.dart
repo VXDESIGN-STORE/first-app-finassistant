@@ -1,24 +1,36 @@
 import 'package:first_app_finassistant/components/block.dart';
 import 'package:first_app_finassistant/components/header.dart';
 import 'package:first_app_finassistant/components/transaction_row.dart';
-import 'package:first_app_finassistant/entities/money_value.dart';
+import 'package:first_app_finassistant/entities/bank_account.dart';
 import 'package:first_app_finassistant/entities/transaction.dart';
+import 'package:first_app_finassistant/enums/currency_type.dart';
 import 'package:first_app_finassistant/other/constants.dart';
 import 'package:first_app_finassistant/other/storage.dart';
 import 'package:first_app_finassistant/screens/edit_transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class IncomeOutcomeScreen extends StatefulWidget {
+import 'edit_bank_account.dart';
+
+class AccountScreen extends StatefulWidget {
+  final BankAccount account;
+
+  const AccountScreen({
+    Key key,
+    @required this.account,
+  }) : super(key: key);
+
   @override
-  _IncomeOutcomeScreenState createState() => _IncomeOutcomeScreenState();
+  _AccountScreenState createState() => _AccountScreenState();
 }
 
-class _IncomeOutcomeScreenState extends State<IncomeOutcomeScreen> {
-  static const double _headerHeight = 335;
-  static const String _keyPrefix = "income_outcome";
+class _AccountScreenState extends State<AccountScreen> {
+  static const double _headerHeight = 270;
+  static const String _keyPrefix = "account";
 
   final StorageProvider storageProvider = StorageProvider.getInstance();
+
+  CurrencyType _activeType = CurrencyType.RUR;
 
   @override
   void initState() {
@@ -28,9 +40,20 @@ class _IncomeOutcomeScreenState extends State<IncomeOutcomeScreen> {
 
   _loadData() {
     setState(() {
+      _activeType = widget.account.currencyType;
+
       storageProvider.regenerateCurrencyTypeChangeKey();
       storageProvider.regenerateBankAccountChangeKey();
     });
+  }
+
+  _changeCurrencyType(CurrencyType type, Function(VoidCallback) setState) async {
+    if (_activeType != type) {
+      setState(() {
+        _activeType = type;
+        storageProvider.regenerateCurrencyTypeChangeKey();
+      });
+    }
   }
 
   @override
@@ -52,8 +75,8 @@ class _IncomeOutcomeScreenState extends State<IncomeOutcomeScreen> {
                         width: MediaQuery.of(context).size.width,
                         title: AppText.kRecentChangesHeaderTitle,
                         items: [
-                          if (storageProvider.orderedTransactions?.isNotEmpty == true)
-                            for (var transaction in storageProvider.orderedTransactions)
+                          if (storageProvider.orderedTransactions?.where((transaction) => transaction.bankAccountId == widget.account.id)?.isNotEmpty == true)
+                            for (var transaction in storageProvider.orderedTransactions.where((transaction) => transaction.bankAccountId == widget.account.id))
                               TransactionRow(
                                 onTap: () {
                                   Navigator.push(
@@ -97,27 +120,45 @@ class _IncomeOutcomeScreenState extends State<IncomeOutcomeScreen> {
                 height: _headerHeight,
               ),
               Padding(
-                padding: EdgeInsets.only(top: 54, left: 12),
-                child: IconButton(
-                  key: Key("$_keyPrefix:buttonBack"),
-                  icon: FaIcon(
-                    FontAwesomeIcons.chevronLeft,
-                    size: 24,
-                    color: AppColor.kLinkColor,
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
+                  padding: EdgeInsets.only(top: 54, left: 12, right: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        key: Key("$_keyPrefix:buttonBack"),
+                        icon: FaIcon(
+                          FontAwesomeIcons.chevronLeft,
+                          size: 24,
+                          color: AppColor.kLinkColor,
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      IconButton(
+                        key: Key("$_keyPrefix:buttonEdit"),
+                        icon: FaIcon(
+                          FontAwesomeIcons.edit,
+                          size: 24,
+                          color: AppColor.kLinkColor,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => EditBankAccountScreen()),
+                          );
+                        },
+                      ),
+                    ],
+                  )),
               Padding(
                 padding: EdgeInsets.only(top: 114),
-                child: IncomeOutcomeHeader(
+                child: AccountHeader(
                   key: storageProvider.currencyTypeChangeKey,
-                  income: storageProvider.transactions.sumOfIncome(storageProvider.summaryType),
-                  outcome: storageProvider.transactions.sumOfOutcome(storageProvider.summaryType),
-                  activeType: storageProvider.summaryType,
-                  changeCurrencyType: (type) => storageProvider.changeCurrencyType(type, setState),
+                  account: widget.account,
+                  value: storageProvider.transactions.sumOfAccount(_activeType, widget.account),
+                  activeType: _activeType,
+                  changeCurrencyType: (type) => _changeCurrencyType(type, setState),
                 ),
               ),
             ],
