@@ -18,7 +18,11 @@ class TransactionRow extends BlockItemRow {
           children: [
             Padding(
               padding: EdgeInsets.only(bottom: 5),
-              child: BlockBankAccountRow(storageProvider.getBankAccount(transaction)),
+              child: BlockBankAccountRow(
+                context,
+                storageProvider.getBankAccount(transaction),
+                key: storageProvider.bankAccountsKey,
+              ),
             ),
             Padding(
               padding: EdgeInsets.only(top: 5, left: 3),

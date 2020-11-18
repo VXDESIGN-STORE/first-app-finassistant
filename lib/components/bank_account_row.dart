@@ -1,12 +1,15 @@
+import 'package:first_app_finassistant/components/marquee_text.dart';
 import 'package:first_app_finassistant/entities/bank_account.dart';
 import 'package:first_app_finassistant/enums/bank_account_type.dart';
 import 'package:first_app_finassistant/other/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class BankAccountRow extends Row {
+abstract class BankAccountRow extends Row {
   BankAccountRow(
+    double width,
     BankAccount account, {
+    Key key,
     double iconFontSize = 24,
     double textFontSize = 20,
     double spaceSize = 10,
@@ -20,12 +23,22 @@ class BankAccountRow extends Row {
                 color: AppColor.kTextOnLightColor,
               ),
             ),
-            Text(
-              account.name,
-              style: TextStyle(
-                color: AppColor.kTextOnLightColor,
-                fontSize: textFontSize,
-                fontWeight: FontWeight.w300,
+            Container(
+              width: width,
+              child: MarqueeText(
+                key: key,
+                direction: Axis.horizontal,
+                child: Text(
+                  account.name,
+                  key: key,
+                  maxLines: 1,
+                  softWrap: false,
+                  style: TextStyle(
+                    color: AppColor.kTextOnLightColor,
+                    fontSize: textFontSize,
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
               ),
             ),
           ],
@@ -39,14 +52,41 @@ class BankAccountRow extends Row {
 }
 
 class HeaderBankAccountRow extends BankAccountRow {
-  HeaderBankAccountRow(BankAccount account)
-      : super(
+  HeaderBankAccountRow(
+    BuildContext context,
+    BankAccount account, {
+    Key key,
+  }) : super(
+          MediaQuery.of(context).size.width - 100,
           account,
+          key: key,
+          iconFontSize: 28,
+          textFontSize: 24,
+        );
+}
+
+class TitleBankAccountRow extends BankAccountRow {
+  TitleBankAccountRow(
+    BuildContext context,
+    BankAccount account, {
+    Key key,
+  }) : super(
+          MediaQuery.of(context).size.width - 200,
+          account,
+          key: key,
           iconFontSize: 28,
           textFontSize: 24,
         );
 }
 
 class BlockBankAccountRow extends BankAccountRow {
-  BlockBankAccountRow(BankAccount account) : super(account);
+  BlockBankAccountRow(
+    BuildContext context,
+    BankAccount account, {
+    Key key,
+  }) : super(
+          MediaQuery.of(context).size.width - 200,
+          account,
+          key: key,
+        );
 }

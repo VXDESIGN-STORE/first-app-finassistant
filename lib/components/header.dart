@@ -31,9 +31,14 @@ class HeaderBackground extends Container {
         );
 }
 
-class Header extends Column {
+abstract class Header extends Column {
+  final Widget leftButton;
+  final Widget rightButton;
+
   Header({
     Key key,
+    Widget leftButton,
+    Widget rightButton,
     Widget item,
     CurrencyType activeType,
     String title,
@@ -43,20 +48,40 @@ class Header extends Column {
         assert(activeType != null),
         assert(title == null && customTitle != null || title != null && customTitle == null),
         assert(changeCurrencyType != null),
+        this.leftButton = leftButton,
+        this.rightButton = rightButton,
         super(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: EdgeInsets.only(left: 30, bottom: 10),
-              child: customTitle == null ? getTitleWidget(title) : customTitle,
+            if (leftButton != null || rightButton != null)
+              Flexible(
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 10, left: 12, right: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      if (leftButton != null) leftButton,
+                      if (rightButton != null) rightButton,
+                    ],
+                  ),
+                ),
+              ),
+            Flexible(
+              child: Padding(
+                padding: EdgeInsets.only(left: 30, bottom: 10),
+                child: customTitle == null ? getTitleWidget(title) : customTitle,
+              ),
             ),
             Padding(
               padding: EdgeInsets.only(left: 30, top: 10, bottom: 10),
               child: item,
             ),
-            CurrenciesRow(
-              activeType: activeType,
-              changeCurrencyType: changeCurrencyType,
+            Flexible(
+              child: CurrenciesRow(
+                activeType: activeType,
+                changeCurrencyType: changeCurrencyType,
+              ),
             ),
           ],
         );
@@ -64,6 +89,9 @@ class Header extends Column {
   static Text getTitleWidget(String title) {
     return Text(
       title,
+      overflow: TextOverflow.fade,
+      maxLines: 1,
+      softWrap: false,
       style: TextStyle(
         color: AppColor.kTextOnLightColor,
         fontSize: 24,
@@ -76,11 +104,13 @@ class Header extends Column {
 class SummaryHeader extends Header {
   SummaryHeader({
     Key key,
+    Widget leftButton,
     MoneyValue value,
     CurrencyType activeType,
     Function(CurrencyType) changeCurrencyType,
   }) : super(
           key: key,
+          leftButton: leftButton,
           item: HeaderMoneyValueRow(
             value,
             key: key,
@@ -95,12 +125,14 @@ class SummaryHeader extends Header {
 class IncomeOutcomeHeader extends Header {
   IncomeOutcomeHeader({
     Key key,
+    Widget leftButton,
     MoneyValue income,
     MoneyValue outcome,
     CurrencyType activeType,
     Function(CurrencyType) changeCurrencyType,
   }) : super(
           key: key,
+          leftButton: leftButton,
           item: Column(
             children: [
               Padding(
@@ -153,20 +185,30 @@ class IncomeOutcomeHeader extends Header {
 
 class AccountHeader extends Header {
   AccountHeader({
-    Key key,
+    BuildContext context,
+    Key currencyTypeChangeKey,
+    Key bankAccountsKey,
+    Widget leftButton,
+    Widget rightButton,
     BankAccount account,
     MoneyValue value,
     CurrencyType activeType,
     Function(CurrencyType) changeCurrencyType,
   }) : super(
-          key: key,
+          key: currencyTypeChangeKey,
+          leftButton: leftButton,
+          rightButton: rightButton,
           item: HeaderMoneyValueRow(
             value,
-            key: key,
+            key: currencyTypeChangeKey,
             activeType: activeType,
           ),
           activeType: activeType,
-          customTitle: HeaderBankAccountRow(account),
+          customTitle: HeaderBankAccountRow(
+            context,
+            account,
+            key: bankAccountsKey,
+          ),
           changeCurrencyType: changeCurrencyType,
         );
 }

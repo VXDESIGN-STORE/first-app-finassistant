@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 
 void main() {
   MoneyValueNumberStyle.loadSpecificNumberStyle();
-  // debugPaintSizeEnabled = false;
+  // debugPaintSizeEnabled = true;
   runApp(MyApp());
 }
 

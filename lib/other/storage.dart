@@ -47,6 +47,9 @@ class StorageProvider {
       BankAccount.newItem("Sberbank", BankAccountType.CARD, CurrencyType.RUR),
       BankAccount.newItem("Tinkoff", BankAccountType.DEPOSIT, CurrencyType.EUR),
       BankAccount.newItem("Alfa-Bank", null, CurrencyType.USD),
+      BankAccount.newItem("Gazprombank", BankAccountType.CARD, CurrencyType.RUR),
+      BankAccount.newItem("VTB", BankAccountType.CARD, CurrencyType.RUR),
+      BankAccount.newItem("bchbsdjka daksndkjabsd daksnjd", BankAccountType.CARD, CurrencyType.RUR),
     ];
     _transactions = [
       Transaction.newItem(true, _accounts[0].id, MoneyValue(520, CurrencyType.RUR), DateTime.now().add(Duration(days: -1)), '''Lorem ipsum dolor sit amet,

@@ -4,7 +4,7 @@ import 'package:first_app_finassistant/components/block_item_row.dart';
 import 'package:first_app_finassistant/components/header.dart';
 import 'package:first_app_finassistant/components/income_outcome_row.dart';
 import 'package:first_app_finassistant/components/money_value_row.dart';
-import 'package:first_app_finassistant/entities/money_value.dart';
+import 'package:first_app_finassistant/components/sliver_app_bar_delegate.dart';
 import 'package:first_app_finassistant/entities/transaction.dart';
 import 'package:first_app_finassistant/other/constants.dart';
 import 'package:first_app_finassistant/other/currency_rates.dart';
@@ -59,136 +59,130 @@ class _SummaryScreenState extends State<SummaryScreen> {
         if (snapshot.connectionState == ConnectionState.done) {
           screen = Scaffold(
             key: ValueKey(0),
-            body: Column(
-              children: [
-                Stack(
-                  children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height,
-                      child: ListView(
-                        padding: EdgeInsets.only(top: 25, bottom: 25),
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: _headerHeight),
-                            child: Block(
-                              width: MediaQuery.of(context).size.width,
-                              title: AppText.kIncomeOutcomeHeaderTitle,
-                              items: [
+            body: CustomScrollView(
+              slivers: [
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _SummarySliverAppBarDelegate(
+                    headerHeight: _headerHeight,
+                    storageProvider: storageProvider,
+                    setState: setState,
+                  ),
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      Padding(
+                        padding: EdgeInsets.only(top: 25),
+                        child: Block(
+                          width: MediaQuery.of(context).size.width,
+                          title: AppText.kIncomeOutcomeHeaderTitle,
+                          items: [
+                            BlockItemRow(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => IncomeOutcomeScreen()),
+                                ).then((value) => setState(() {}));
+                              },
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 2.5),
+                                  child: IncomeRow(
+                                    storageProvider.transactions.sumOfIncome(storageProvider.summaryType),
+                                    currencyTypeChangeKey: storageProvider.currencyTypeChangeKey,
+                                    activeType: storageProvider.summaryType,
+                                    isRight: true,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 2.5),
+                                  child: OutcomeRow(
+                                    storageProvider.transactions.sumOfOutcome(storageProvider.summaryType),
+                                    currencyTypeChangeKey: storageProvider.currencyTypeChangeKey,
+                                    activeType: storageProvider.summaryType,
+                                    isRight: true,
+                                  ),
+                                ),
+                              ],
+                              isRight: true,
+                            ),
+                          ],
+                          isRight: true,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 25, bottom: 100),
+                        child: Block(
+                          width: MediaQuery.of(context).size.width,
+                          title: AppText.kBankAccountsHeaderTitle,
+                          items: [
+                            if (storageProvider.accounts?.isNotEmpty == true)
+                              for (var account in storageProvider.accounts)
                                 BlockItemRow(
                                   onTap: () {
                                     Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => IncomeOutcomeScreen()),
+                                      MaterialPageRoute(
+                                        builder: (context) => AccountScreen(
+                                          account: account,
+                                        ),
+                                      ),
                                     ).then((value) => setState(() {}));
                                   },
                                   children: [
                                     Padding(
                                       padding: EdgeInsets.only(bottom: 2.5),
-                                      child: IncomeRow(
-                                        storageProvider.transactions.sumOfIncome(storageProvider.summaryType),
-                                        currencyTypeChangeKey: storageProvider.currencyTypeChangeKey,
-                                        activeType: storageProvider.summaryType,
-                                        isRight: true,
+                                      child: BlockBankAccountRow(
+                                        context,
+                                        account,
+                                        key: storageProvider.bankAccountsKey,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(top: 2.5, bottom: 2.5),
+                                      child: BlockMoneyValueRow(
+                                        storageProvider.transactions.sumOfAccount(account.currencyType, account),
+                                        key: storageProvider.bankAccountsKey,
                                       ),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.only(top: 2.5),
-                                      child: OutcomeRow(
-                                        storageProvider.transactions.sumOfOutcome(storageProvider.summaryType),
-                                        currencyTypeChangeKey: storageProvider.currencyTypeChangeKey,
-                                        activeType: storageProvider.summaryType,
-                                        isRight: true,
+                                      child: SmallBlockMoneyValueRow(
+                                        storageProvider.transactions.sumOfAccount(storageProvider.summaryType, account),
+                                        key: storageProvider.currencyTypeChangeKey,
                                       ),
                                     ),
                                   ],
-                                  isRight: true,
+                                )
+                            else
+                              Text(
+                                AppText.kNoBankAccounts,
+                                style: TextStyle(
+                                  color: AppColor.kTextOnLightColor,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                              ],
-                              isRight: true,
+                              )
+                          ],
+                          button: IconButton(
+                            icon: FaIcon(
+                              FontAwesomeIcons.plus,
+                              size: 18,
+                              color: AppColor.kTextOnDarkColor,
                             ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => EditBankAccountScreen()),
+                              );
+                            },
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 25),
-                            child: Block(
-                              width: MediaQuery.of(context).size.width,
-                              title: AppText.kBankAccountsHeaderTitle,
-                              items: [
-                                if (storageProvider.accounts?.isNotEmpty == true)
-                                  for (var account in storageProvider.accounts)
-                                    BlockItemRow(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => AccountScreen(
-                                              account: account,
-                                            ),
-                                          ),
-                                        ).then((value) => setState(() {}));
-                                      },
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.only(bottom: 2.5),
-                                          child: BankAccountRow(account),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 2.5, bottom: 2.5),
-                                          child: BlockMoneyValueRow(
-                                            storageProvider.transactions.sumOfAccount(account.currencyType, account),
-                                            key: storageProvider.bankAccountsKey,
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 2.5),
-                                          child: SmallBlockMoneyValueRow(
-                                            storageProvider.transactions.sumOfAccount(storageProvider.summaryType, account),
-                                            key: storageProvider.currencyTypeChangeKey,
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                else
-                                  Text(
-                                    AppText.kNoBankAccounts,
-                                    style: TextStyle(
-                                      color: AppColor.kTextOnLightColor,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  )
-                              ],
-                              button: IconButton(
-                                icon: FaIcon(
-                                  FontAwesomeIcons.plus,
-                                  size: 18,
-                                  color: AppColor.kTextOnDarkColor,
-                                ),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => EditBankAccountScreen()),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                    HeaderBackground(
-                      height: _headerHeight,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 54),
-                      child: SummaryHeader(
-                        key: storageProvider.currencyTypeChangeKey,
-                        value: storageProvider.transactions.sum(storageProvider.summaryType),
-                        activeType: storageProvider.summaryType,
-                        changeCurrencyType: (type) => storageProvider.changeCurrencyType(type, setState),
-                      ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                )
               ],
             ),
           );
@@ -220,4 +214,21 @@ class _SummaryScreenState extends State<SummaryScreen> {
       },
     );
   }
+}
+
+class _SummarySliverAppBarDelegate extends SliverAppBarDelegate {
+  _SummarySliverAppBarDelegate({
+    double headerHeight,
+    StorageProvider storageProvider,
+    Function(VoidCallback) setState,
+  }) : super(
+          headerHeight: headerHeight,
+          header: SummaryHeader(
+            key: storageProvider.currencyTypeChangeKey,
+            value: storageProvider.transactions.sum(storageProvider.summaryType),
+            activeType: storageProvider.summaryType,
+            changeCurrencyType: (type) => storageProvider.changeCurrencyType(type, setState),
+          ),
+          pinnedTitle: Header.getTitleWidget(AppText.kSummaryHeaderTitle),
+        );
 }
