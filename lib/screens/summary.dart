@@ -4,13 +4,12 @@ import 'package:first_app_finassistant/components/block_item_row.dart';
 import 'package:first_app_finassistant/components/header.dart';
 import 'package:first_app_finassistant/components/income_outcome_row.dart';
 import 'package:first_app_finassistant/components/money_value_row.dart';
-import 'package:first_app_finassistant/entities/bank_account.dart';
 import 'package:first_app_finassistant/entities/money_value.dart';
-import 'package:first_app_finassistant/enums/bank_account_type.dart';
-import 'package:first_app_finassistant/enums/currency_type.dart';
 import 'package:first_app_finassistant/other/constants.dart';
 import 'package:first_app_finassistant/other/currency_rates.dart';
+import 'package:first_app_finassistant/other/storage.dart';
 import 'package:first_app_finassistant/screens/edit_bank_account.dart';
+import 'package:first_app_finassistant/screens/income_outcome.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,15 +20,10 @@ class SummaryScreen extends StatefulWidget {
 }
 
 class _SummaryScreenState extends State<SummaryScreen> {
-  static const double headerHeight = 215;
+  static const double _headerHeight = 215;
+  static const String _keyPrefix = "summary";
 
-  MoneyValue _summaryValue = MoneyValue.zero;
-  CurrencyType _summaryType = CurrencyType.RUR;
-  List<MoneyValue> _incomeTransactions = [];
-  List<MoneyValue> _outcomeTransactions = [];
-  Key _currencyTypeChangeKey = Key("");
-  Key _bankAccountsKey = Key("");
-  List<BankAccount> _accounts = [];
+  final StorageProvider storageProvider = StorageProvider.getInstance();
 
   Future<bool> _loadingFlag;
 
@@ -40,44 +34,17 @@ class _SummaryScreenState extends State<SummaryScreen> {
   }
 
   _loadData() async {
-    var prefs = await SharedPreferences.getInstance();
+    var preferences = await SharedPreferences.getInstance();
     await CurrencyRates.loadRates();
 
     _loadingFlag = Future.value(true);
 
     setState(() {
-      var value = prefs.getString(AppSharedKey.kSummaryValue);
-      _summaryValue = value?.isNotEmpty == true ? MoneyValue.fromJson(value) : MoneyValue.zero;
-      _summaryType = CurrencyType.values[(prefs.getInt(AppSharedKey.kActiveType) ?? 0)];
-      _currencyTypeChangeKey = UniqueKey();
-      _bankAccountsKey = UniqueKey();
-      // _incomeTransactions = prefs.getStringList(AppSharedKey.kIncomeTransactions)?.map(MoneyValue.fromJson)?.toList() ?? [];
-      // _outcomeTransactions = prefs.getStringList(AppSharedKey.kOutcomeTransactions)?.map(MoneyValue.fromJson)?.toList() ?? [];
-      // _accounts = prefs.getStringList(AppSharedKey.kAccounts)?.map(BankAccount.fromJson)?.toList() ?? [];
-      _incomeTransactions = [
-        MoneyValue(520, CurrencyType.RUR),
-        MoneyValue(5, CurrencyType.EUR),
-      ];
-      _outcomeTransactions = [
-        MoneyValue(225, CurrencyType.RUR),
-      ];
-      _accounts = [
-        BankAccount(UniqueKey().toString(), "Sberbank", BankAccountType.CARD, MoneyValue(100, CurrencyType.RUR)),
-        BankAccount(UniqueKey().toString(), "Tinkoff", BankAccountType.DEPOSIT, MoneyValue(244, CurrencyType.EUR)),
-        BankAccount(UniqueKey().toString(), "Alfa-Bank", null, MoneyValue(500, CurrencyType.USD)),
-      ];
-    });
-  }
+      storageProvider.setData(preferences);
 
-  _changeCurrencyType(CurrencyType type) async {
-    var prefs = await SharedPreferences.getInstance();
-    if (_summaryType != type) {
-      setState(() {
-        _summaryType = type;
-        prefs.setInt(AppSharedKey.kActiveType, _summaryType.index);
-        _currencyTypeChangeKey = Key(_summaryType.toString());
-      });
-    }
+      storageProvider.regenerateCurrencyTypeChangeKey();
+      storageProvider.regenerateBankAccountChangeKey();
+    });
   }
 
   @override
@@ -100,7 +67,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                         padding: EdgeInsets.only(top: 25, bottom: 25),
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(top: headerHeight),
+                            padding: EdgeInsets.only(top: _headerHeight),
                             child: Block(
                               width: MediaQuery.of(context).size.width,
                               title: AppText.kIncomeOutcomeHeaderTitle,
@@ -109,24 +76,26 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                   onTap: () {
                                     Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => EditBankAccount()), // TODO: Replace on real screen
-                                    );
+                                      MaterialPageRoute(builder: (context) => IncomeOutcomeScreen()),
+                                    ).then((value) => setState(() {}));
                                   },
                                   children: [
                                     Padding(
                                       padding: EdgeInsets.only(bottom: 2.5),
                                       child: IncomeRow(
-                                        _incomeTransactions.sum(_summaryType),
-                                        currencyTypeChangeKey: _currencyTypeChangeKey,
-                                        activeType: _summaryType,
+                                        storageProvider.transactions.where((transaction) => transaction.isIncome).map((transaction) => transaction.value).sum(storageProvider.summaryType),
+                                        currencyTypeChangeKey: storageProvider.currencyTypeChangeKey,
+                                        activeType: storageProvider.summaryType,
+                                        isRight: true,
                                       ),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.only(top: 2.5),
                                       child: OutcomeRow(
-                                        _outcomeTransactions.sum(_summaryType),
-                                        currencyTypeChangeKey: _currencyTypeChangeKey,
-                                        activeType: _summaryType,
+                                        storageProvider.transactions.where((transaction) => !transaction.isIncome).map((transaction) => transaction.value).sum(storageProvider.summaryType),
+                                        currencyTypeChangeKey: storageProvider.currencyTypeChangeKey,
+                                        activeType: storageProvider.summaryType,
+                                        isRight: true,
                                       ),
                                     ),
                                   ],
@@ -142,8 +111,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                               width: MediaQuery.of(context).size.width,
                               title: AppText.kBankAccountsHeaderTitle,
                               items: [
-                                if (_accounts?.isNotEmpty == true)
-                                  for (var account in _accounts)
+                                if (storageProvider.accounts?.isNotEmpty == true)
+                                  for (var account in storageProvider.accounts)
                                     BlockItemRow(
                                       onTap: () {
                                         Navigator.push(
@@ -160,7 +129,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                           padding: EdgeInsets.only(top: 2.5),
                                           child: BlockMoneyValueRow(
                                             account.value,
-                                            key: _bankAccountsKey,
+                                            key: storageProvider.bankAccountsKey,
                                           ),
                                         ),
                                       ],
@@ -194,15 +163,17 @@ class _SummaryScreenState extends State<SummaryScreen> {
                       ),
                     ),
                     HeaderBackground(
-                      height: headerHeight,
+                      height: _headerHeight,
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: 54),
                       child: SummaryHeader(
-                        key: _currencyTypeChangeKey,
-                        value: _summaryValue,
-                        activeType: _summaryType,
-                        changeCurrencyType: _changeCurrencyType,
+                        key: storageProvider.currencyTypeChangeKey,
+                        value: storageProvider.accounts.map((account) => account.value).sum(storageProvider.summaryType),
+                        activeType: storageProvider.summaryType,
+                        changeCurrencyType: (type) {
+                          storageProvider.changeCurrencyType(type, setState);
+                        },
                       ),
                     ),
                   ],

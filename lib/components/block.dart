@@ -41,12 +41,7 @@ class Block extends Row {
                         mainAxisAlignment: isRight ? MainAxisAlignment.end : MainAxisAlignment.start,
                         children: [
                           if (button != null && isRight) ...[
-                            Container(
-                                height: 36,
-                                width: 36,
-                                decoration: BoxDecoration(color: AppColor.kLinkColor, shape: BoxShape.circle),
-                                child: button
-                            ),
+                            Container(height: 36, width: 36, decoration: BoxDecoration(color: AppColor.kLinkColor, shape: BoxShape.circle), child: button),
                             Spacer(),
                           ],
                           Text(
@@ -59,12 +54,7 @@ class Block extends Row {
                           ),
                           if (button != null && !isRight) ...[
                             Spacer(),
-                            Container(
-                                height: 36,
-                                width: 36,
-                                decoration: BoxDecoration(color: AppColor.kLinkColor, shape: BoxShape.circle),
-                                child: button
-                            ),
+                            Container(height: 36, width: 36, decoration: BoxDecoration(color: AppColor.kLinkColor, shape: BoxShape.circle), child: button),
                           ],
                         ],
                       ),
@@ -96,7 +86,13 @@ class Block extends Row {
 
   static EdgeInsets getMargin(int index, int length) {
     if (length > 2) {
-      return index != 0 && index != length - 1 ? EdgeInsets.only(top: 15, bottom: 15) : EdgeInsets.zero;
+      if (index == 0) {
+        return EdgeInsets.only(bottom: 7.5);
+      }
+      if (index == length - 1) {
+        return EdgeInsets.only(top: 7.5);
+      }
+      return EdgeInsets.only(top: 7.5, bottom: 7.5);
     } else if (length == 2) {
       return index == 0 ? EdgeInsets.only(bottom: 7.5) : EdgeInsets.only(top: 7.5);
     }

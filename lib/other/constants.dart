@@ -19,15 +19,16 @@ class AppText {
   static const kSummaryHeaderTitle = "Summary";
   static const kIncomeOutcomeHeaderTitle = "Income / Outcome";
   static const kBankAccountsHeaderTitle = "Bank Accounts";
+  static const kRecentChangesHeaderTitle = "Recent Changes";
   static const kNoBankAccounts = "You have no registered bank account";
+  static const kNoTransactions = "You have no registered transaction";
 }
 
 // Shared Preferences Keys
 class AppSharedKey {
   static const kCurrencyRatesLastDateUpdate = "currencyRatesLastDateUpdate";
   static const kActiveType = "activeType";
-  static const kSummaryValue = "summaryValue";
-  static const kIncomeTransactions = "incomeValues";
-  static const kOutcomeTransactions = "outcomeValues";
+  static const kIncomeTransactions = "incomeTransactions";
+  static const kOutcomeTransactions = "outcomeTransactions";
   static const kAccounts = "accounts";
 }

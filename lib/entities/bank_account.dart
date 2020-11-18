@@ -12,6 +12,8 @@ class BankAccount {
 
   BankAccount(this._id, this._name, this._type, this._value);
 
+  BankAccount.newItem(this._name, this._type, this._value) : this._id = UniqueKey().toString();
+
   String get id => _id;
 
   String get name => _name;
@@ -22,9 +24,9 @@ class BankAccount {
 
   static BankAccount fromJson(String json) {
     var map = jsonDecode(json) as Map<String, dynamic>;
-    var id = map.containsKey("id") ? map["id"] : UniqueKey().toString();
-    var name = map.containsKey("name") ? map["name"] : "";
-    var type = map.containsKey("type") ? map["type"] : BankAccountType.CARD;
+    var id = map.containsKey("id") ? map["id"] as String : UniqueKey().toString();
+    var name = map.containsKey("name") ? map["name"] as String : "";
+    var type = map.containsKey("type") ? map["type"] as BankAccountType : BankAccountType.CARD;
     var value = map.containsKey("value") ? MoneyValue.fromJson(map["value"]) : MoneyValue.zero;
     return BankAccount(id, name, type, value);
   }

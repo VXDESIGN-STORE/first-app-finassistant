@@ -18,8 +18,8 @@ class MoneyValue {
 
   static MoneyValue fromJson(String json) {
     var map = jsonDecode(json) as Map<String, dynamic>;
-    var value = map.containsKey("value") ? map["value"] : 0;
-    var type = map.containsKey("type") ? map["type"] : CurrencyType.RUR;
+    var value = map.containsKey("value") ? map["value"] as double : 0;
+    var type = map.containsKey("type") ? map["type"] as CurrencyType : CurrencyType.RUR;
     return MoneyValue(value, type);
   }
 
@@ -46,7 +46,7 @@ class MoneyValue {
   }
 }
 
-extension MoneyValueList on List<MoneyValue> {
+extension MoneyValueIterable on Iterable<MoneyValue> {
   MoneyValue sum(CurrencyType type) {
     var result = 0.0;
     for (var value in this) {

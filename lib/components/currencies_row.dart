@@ -1,13 +1,12 @@
-import 'package:first_app_finassistant/entities/money_value.dart';
 import 'package:first_app_finassistant/enums/currency_type.dart';
 import 'package:first_app_finassistant/other/constants.dart';
 import 'package:flutter/material.dart';
 
 class CurrenciesRow extends Row {
-  CurrenciesRow(
+  CurrenciesRow({
     CurrencyType activeType,
     Function(CurrencyType) changeCurrencyType,
-  ) : super(
+  }) : super(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

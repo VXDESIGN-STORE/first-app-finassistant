@@ -11,23 +11,34 @@ class IncomeOutcomeRow extends Row {
     bool isIncome = true,
     Key currencyTypeChangeKey,
     CurrencyType activeType,
+    isRight = false,
   }) : super(
           children: [
+            if (!isRight)
+              Padding(
+                padding: EdgeInsets.only(right: 15),
+                child: getFontAwesomeIcon(isIncome),
+              ),
             BlockMoneyValueRow(
               value,
               key: currencyTypeChangeKey,
               activeType: activeType,
             ),
-            Padding(
-              padding: EdgeInsets.only(left: 15),
-              child: FaIcon(
-                isIncome ? FontAwesomeIcons.arrowUp : FontAwesomeIcons.arrowDown,
-                size: 20,
-                color: isIncome ? AppColor.kArrowIncomeColor : AppColor.kArrowOutcomeColor,
+            if (isRight)
+              Padding(
+                padding: EdgeInsets.only(left: 15),
+                child: getFontAwesomeIcon(isIncome),
               ),
-            ),
           ],
         );
+
+  static FaIcon getFontAwesomeIcon(bool isIncome) {
+    return FaIcon(
+      isIncome ? FontAwesomeIcons.arrowUp : FontAwesomeIcons.arrowDown,
+      size: 20,
+      color: isIncome ? AppColor.kArrowIncomeColor : AppColor.kArrowOutcomeColor,
+    );
+  }
 }
 
 class IncomeRow extends IncomeOutcomeRow {
@@ -35,10 +46,12 @@ class IncomeRow extends IncomeOutcomeRow {
     MoneyValue income, {
     Key currencyTypeChangeKey,
     CurrencyType activeType,
+    isRight = false,
   }) : super(
           income,
           currencyTypeChangeKey: currencyTypeChangeKey,
           activeType: activeType,
+          isRight: isRight,
         );
 }
 
@@ -47,10 +60,12 @@ class OutcomeRow extends IncomeOutcomeRow {
     MoneyValue outcome, {
     Key currencyTypeChangeKey,
     CurrencyType activeType,
+    isRight = false,
   }) : super(
           outcome,
           isIncome: false,
           currencyTypeChangeKey: currencyTypeChangeKey,
           activeType: activeType,
+          isRight: isRight,
         );
 }
