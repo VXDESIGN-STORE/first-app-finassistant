@@ -12,6 +12,7 @@ abstract class BankAccountRow extends Row {
     double width,
     BankAccount account, {
     Key key,
+    isLink = false,
     double iconFontSize = 24,
     double textFontSize = 20,
     double spaceSize = 10,
@@ -22,7 +23,7 @@ abstract class BankAccountRow extends Row {
               child: Text(
                 account.currencyType.getSign(),
                 style: TextStyle(
-                  color: AppColor.kTextOnLightColor,
+                  color: isLink ? AppColor.kLinkColor : AppColor.kTextOnLightColor,
                   fontSize: textFontSize,
                   fontWeight: FontWeight.w700,
                 ),
@@ -33,7 +34,7 @@ abstract class BankAccountRow extends Row {
               child: FaIcon(
                 account.bankAccountType.getIcon(),
                 size: iconFontSize,
-                color: AppColor.kTextOnLightColor,
+                color: isLink ? AppColor.kLinkColor : AppColor.kTextOnLightColor,
               ),
             ),
             Container(
@@ -47,7 +48,7 @@ abstract class BankAccountRow extends Row {
                   maxLines: 1,
                   softWrap: false,
                   style: TextStyle(
-                    color: AppColor.kTextOnLightColor,
+                    color: isLink ? AppColor.kLinkColor : AppColor.kTextOnLightColor,
                     fontSize: textFontSize,
                     fontWeight: FontWeight.w300,
                   ),
@@ -103,10 +104,12 @@ class SelectionBankAccountRow extends BankAccountRow {
     BuildContext context,
     BankAccount account, {
     Key key,
+    bool isLink = false,
   }) : super(
           MediaQuery.of(context).size.width - 250,
           account,
           key: key,
+          isLink: isLink,
           iconFontSize: 28,
           textFontSize: 24,
         );

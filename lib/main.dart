@@ -8,6 +8,11 @@ import 'package:flutter/services.dart';
 
 void main() {
   MoneyValueNumberStyle.loadSpecificNumberStyle();
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown
+  ]);
   // debugPaintSizeEnabled = true;
   runApp(MyApp());
 }

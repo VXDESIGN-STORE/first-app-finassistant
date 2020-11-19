@@ -53,7 +53,7 @@ class _IncomeOutcomeScreenState extends State<IncomeOutcomeScreen> {
             delegate: SliverChildListDelegate(
               [
                 Padding(
-                  padding: EdgeInsets.only(top: 25, bottom: 100),
+                  padding: EdgeInsets.only(top: 25, bottom: 150),
                   child: Block(
                     width: MediaQuery.of(context).size.width,
                     title: AppText.kRecentChangesHeaderTitle,

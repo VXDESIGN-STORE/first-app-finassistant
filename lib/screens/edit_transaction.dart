@@ -111,6 +111,7 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
               inputFormatters: [
                 DecimalTextInputFormatter(),
               ],
+              textCapitalization: TextCapitalization.sentences,
               style: buildTextStyleForInput(),
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -198,6 +199,8 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
             ),
             TextField(
               keyboardType: TextInputType.multiline,
+              textCapitalization: TextCapitalization.sentences,
+              textInputAction: TextInputAction.done,
               maxLines: null,
               style: buildTextStyleForInput(),
               decoration: InputDecoration(
@@ -241,13 +244,17 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
     ];
   }
 
-  Row getBankAccountDescription(BuildContext context, BankAccount account) {
+  Row getBankAccountDescription(
+    BuildContext context,
+    BankAccount account, {
+    bool isLink = false,
+  }) {
     return Row(
       children: [
-
         SelectionBankAccountRow(
           context,
           account,
+          isLink: isLink,
         ),
       ],
     );
@@ -265,7 +272,15 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
                   onPressed: () {
                     Navigator.pop(context, account);
                   },
-                  child: getBankAccountDescription(context, account),
+                  child: getBankAccountDescription(context, account, isLink: true),
+                ),
+              if (storageProvider.bankAccounts.isEmpty)
+                Padding(
+                  padding: EdgeInsets.only(left: 20, right: 20, bottom: 5),
+                  child: Text(
+                    AppText.kNoBankAccounts,
+                    style: buildTextStyleForInput(),
+                  ),
                 ),
             ],
           );
@@ -289,7 +304,7 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
                   onPressed: () {
                     Navigator.pop(context, type);
                   },
-                  child: getCurrencyTypeDescription(type),
+                  child: getCurrencyTypeDescription(type, isLink: true),
                 ),
             ],
           );
@@ -323,10 +338,10 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
       });
   }
 
-  Text getCurrencyTypeDescription(CurrencyType type) {
+  Text getCurrencyTypeDescription(CurrencyType type, {bool isLink = false}) {
     return Text(
       "${type.getLongName()} (${type.getSign()})",
-      style: buildTextStyleForInput(),
+      style: buildTextStyleForInput(isLink: isLink),
     );
   }
 

@@ -59,6 +59,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var transactions = storageProvider.orderedTransactions?.where((transaction) => transaction.bankAccountId == widget.account.id);
     return Scaffold(
       backgroundColor: AppColor.kBackgroundMainAppColor,
       body: CustomScrollView(
@@ -80,13 +81,13 @@ class _AccountScreenState extends State<AccountScreen> {
             delegate: SliverChildListDelegate(
               [
                 Padding(
-                  padding: EdgeInsets.only(top: 25, bottom: 100),
+                  padding: EdgeInsets.only(top: 25, bottom: 125),
                   child: Block(
                     width: MediaQuery.of(context).size.width,
                     title: AppText.kRecentChangesHeaderTitle,
                     items: [
-                      if (storageProvider.orderedTransactions?.where((transaction) => transaction.bankAccountId == widget.account.id)?.isNotEmpty == true)
-                        for (var transaction in storageProvider.orderedTransactions.where((transaction) => transaction.bankAccountId == widget.account.id))
+                      if (transactions?.isNotEmpty == true)
+                        for (var transaction in transactions)
                           TransactionRow(
                             onTap: () {
                               Navigator.push(

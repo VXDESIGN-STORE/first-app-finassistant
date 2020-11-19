@@ -22,59 +22,67 @@ abstract class EditScreenState<T extends StatefulWidget> extends State<T> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColor.kBackgroundSummaryElementColor,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: 54, left: 12, right: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    key: Key("$keyPrefix:buttonBack"),
-                    icon: FaIcon(
-                      FontAwesomeIcons.chevronLeft,
-                      size: 24,
-                      color: AppColor.kLinkColor,
+    return GestureDetector(
+      onTap: () {
+        var currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColor.kBackgroundSummaryElementColor,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 54, left: 12, right: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      key: Key("$keyPrefix:buttonBack"),
+                      icon: FaIcon(
+                        FontAwesomeIcons.chevronLeft,
+                        size: 24,
+                        color: AppColor.kLinkColor,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                     ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  IconButton(
-                    key: Key("$keyPrefix:buttonCheck"),
-                    icon: FaIcon(
-                      FontAwesomeIcons.check,
-                      size: 24,
-                      color: AppColor.kLinkColor,
+                    IconButton(
+                      key: Key("$keyPrefix:buttonCheck"),
+                      icon: FaIcon(
+                        FontAwesomeIcons.check,
+                        size: 24,
+                        color: AppColor.kLinkColor,
+                      ),
+                      onPressed: () => complete(context),
                     ),
-                    onPressed: () => complete(context),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 34, right: 15),
-              child: Container(
-                alignment: Alignment.centerLeft,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: getWidgets(context),
+                  ],
                 ),
               ),
-            ),
-          ],
+              Padding(
+                padding: EdgeInsets.only(left: 34, right: 15),
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: getWidgets(context),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   @protected
-  TextStyle buildTextStyleForInput() {
+  TextStyle buildTextStyleForInput({bool isLink = false}) {
     return TextStyle(
-      color: AppColor.kTextOnLightColor,
+      color: isLink ? AppColor.kLinkColor : AppColor.kTextOnLightColor,
       fontSize: 24,
       fontWeight: FontWeight.w300,
     );

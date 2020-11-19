@@ -57,6 +57,7 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
               style: buildTextStyleForLabel(),
             ),
             TextField(
+              textCapitalization: TextCapitalization.sentences,
               style: buildTextStyleForInput(),
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -179,7 +180,7 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
                   onPressed: () {
                     Navigator.pop(context, type);
                   },
-                  child: getBankAccountTypeDescription(type),
+                  child: getBankAccountTypeDescription(type, isLink: true),
                 ),
             ],
           );
@@ -203,7 +204,7 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
                   onPressed: () {
                     Navigator.pop(context, type);
                   },
-                  child: getCurrencyTypeDescription(type),
+                  child: getCurrencyTypeDescription(type, isLink: true),
                 ),
             ],
           );
@@ -215,7 +216,7 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
       });
   }
 
-  Row getBankAccountTypeDescription(BankAccountType type) {
+  Row getBankAccountTypeDescription(BankAccountType type, {bool isLink = false}) {
     return Row(
       children: [
         Padding(
@@ -223,7 +224,7 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
           child: FaIcon(
             type.getIcon(),
             size: 24,
-            color: AppColor.kTextOnLightColor,
+            color: isLink ? AppColor.kLinkColor : AppColor.kTextOnLightColor,
           ),
         ),
         Text(
@@ -231,7 +232,7 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
           maxLines: 1,
           softWrap: false,
           style: TextStyle(
-            color: AppColor.kTextOnLightColor,
+            color: isLink ? AppColor.kLinkColor : AppColor.kTextOnLightColor,
             fontSize: 24,
             fontWeight: FontWeight.w300,
           ),
@@ -240,10 +241,10 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
     );
   }
 
-  Text getCurrencyTypeDescription(CurrencyType type) {
+  Text getCurrencyTypeDescription(CurrencyType type, {bool isLink = false}) {
     return Text(
       "${type.getLongName()} (${type.getSign()})",
-      style: buildTextStyleForInput(),
+      style: buildTextStyleForInput(isLink: isLink),
     );
   }
 

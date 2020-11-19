@@ -1,7 +1,5 @@
 import 'package:first_app_finassistant/entities/bank_account.dart';
-import 'package:first_app_finassistant/entities/money_value.dart';
 import 'package:first_app_finassistant/entities/transaction.dart';
-import 'package:first_app_finassistant/enums/bank_account_type.dart';
 import 'package:first_app_finassistant/enums/currency_type.dart';
 import 'package:first_app_finassistant/other/constants.dart';
 import 'package:flutter/material.dart';
@@ -43,24 +41,6 @@ class StorageProvider {
     summaryType = CurrencyType.values[(preferences.getInt(AppSharedKey.kActiveType) ?? 0)];
     _accounts = preferences.getStringList(AppSharedKey.kBankAccounts)?.map(BankAccount.fromJson)?.toList() ?? [];
     _transactions = preferences.getStringList(AppSharedKey.kTransactions)?.map(Transaction.fromJson)?.toList() ?? [];
-//     _accounts = [
-//       BankAccount.stub("Sberbank", BankAccountType.CARD, CurrencyType.RUR),
-//       BankAccount.stub("Tinkoff", BankAccountType.DEPOSIT, CurrencyType.EUR),
-//       BankAccount.stub("Alfa-Bank", null, CurrencyType.USD),
-//       BankAccount.stub("Gazprombank", BankAccountType.CARD, CurrencyType.RUR),
-//       BankAccount.stub("VTB", BankAccountType.CARD, CurrencyType.RUR),
-//       BankAccount.stub("bchbsdjka daksndkjabsd daksnjd", BankAccountType.CARD, CurrencyType.RUR),
-//     ];
-//     _transactions = [
-//       Transaction.newItem(true, _accounts[0].id, MoneyValue(520, CurrencyType.RUR), DateTime.now().add(Duration(days: -1)), '''Lorem ipsum dolor sit amet,
-// consectetur adipiscing elit,
-// sed do eiusmod tempor
-// incididunt ut labore et dolore
-// magna aliqua.'''),
-//       Transaction.newItem(true, _accounts[1].id, MoneyValue(5, CurrencyType.EUR), DateTime.now().add(Duration(days: -2)), "Interest income"),
-//       Transaction.newItem(false, _accounts[0].id, MoneyValue(225, CurrencyType.RUR), DateTime.now(), "Purchase"),
-//       Transaction.newItem(false, _accounts[0].id, MoneyValue(10, CurrencyType.RUR), DateTime.now(), null),
-//     ];
   }
 
   static Key generateCurrencyTypeChangeKey() {
