@@ -38,7 +38,7 @@ class Transaction {
     var isIncome = map.containsKey("isIncome") ? map["isIncome"] as bool : false;
     var bankAccountId = map.containsKey("bankAccountId") ? map["bankAccountId"] as String : "";
     var value = map.containsKey("value") ? MoneyValue.fromJson(map["value"]) : MoneyValue.zero;
-    var date = map.containsKey("date") ? map["date"] as DateTime : DateTime.now();
+    var date = map.containsKey("date") ? DateFormat.yMd().parse(map["date"]) : DateTime.now();
     var description = map.containsKey("description") ? map["description"] as String : "";
     return Transaction(id, isIncome, bankAccountId, value, date, description);
   }
@@ -48,9 +48,17 @@ class Transaction {
         "isIncome": _isIncome,
         "bankAccountId": _bankAccountId,
         "value": _value.toJson(),
-        "date": _date,
+        "date": DateFormat.yMd().format(_date),
         "description": _description,
       });
+
+  void update(bool isIncome, String bankAccountId, MoneyValue value, DateTime date, String description) {
+    _isIncome = isIncome;
+    _bankAccountId = bankAccountId;
+    _value = value;
+    _date = date;
+    _description = description;
+  }
 }
 
 extension TransactionIterable on Iterable<Transaction> {

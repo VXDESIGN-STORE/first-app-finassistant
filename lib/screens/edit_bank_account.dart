@@ -3,13 +3,14 @@ import 'package:first_app_finassistant/entities/bank_account.dart';
 import 'package:first_app_finassistant/enums/bank_account_type.dart';
 import 'package:first_app_finassistant/enums/currency_type.dart';
 import 'package:first_app_finassistant/other/constants.dart';
+import 'package:first_app_finassistant/screens/account.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class EditBankAccountScreen extends StatefulWidget {
-  final BankAccount account;
+  final BankAccount bankAccount;
 
-  const EditBankAccountScreen({this.account});
+  const EditBankAccountScreen({this.bankAccount});
 
   @override
   _EditBankAccountScreenState createState() => _EditBankAccountScreenState();
@@ -29,9 +30,9 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
   }
 
   _prepare() {
-    _nameController.text = widget.account?.name?.toString();
-    _bankAccountType = widget.account?.bankAccountType;
-    _currencyType = widget.account?.currencyType;
+    _nameController.text = widget.bankAccount?.name?.toString();
+    _bankAccountType = widget.bankAccount?.bankAccountType;
+    _currencyType = widget.bankAccount?.currencyType;
   }
 
   @override
@@ -52,14 +53,14 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Name",
+              AppText.kBankNameLabel,
               style: buildTextStyleForLabel(),
             ),
             TextField(
               style: buildTextStyleForInput(),
               decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: 'Enter a name',
+                hintText: AppText.kBankNameHint,
               ),
               controller: _nameController,
             ),
@@ -72,7 +73,7 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Account Type",
+              AppText.kBankAccountTypeLabel,
               style: buildTextStyleForLabel(),
             ),
             InkWell(
@@ -85,7 +86,7 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
                     _bankAccountType != null
                         ? getBankAccountTypeDescription(_bankAccountType)
                         : Text(
-                            "—",
+                            AppText.kEmptyField,
                             style: buildTextStyleForInput(),
                           ),
                     FaIcon(
@@ -106,7 +107,7 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Account Rate",
+              AppText.kCurrencyRateLabel,
               style: buildTextStyleForLabel(),
             ),
             InkWell(
@@ -119,7 +120,7 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
                     _currencyType != null
                         ? getCurrencyTypeDescription(_currencyType)
                         : Text(
-                            "—",
+                            AppText.kEmptyField,
                             style: buildTextStyleForInput(),
                           ),
                     FaIcon(
@@ -134,7 +135,7 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
           ],
         ),
       ),
-      if (widget.account != null) ...[
+      if (widget.bankAccount != null) ...[
         Padding(
           padding: EdgeInsets.only(top: 12.5, bottom: 12.5),
           child: Container(
@@ -150,9 +151,9 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
           child: Container(
             alignment: Alignment.center,
             child: TextButton(
-              onPressed: () {},
+              onPressed: () => delete(context),
               child: Text(
-                "Delete This Bank Account?",
+                AppText.kDeleteBankAccount,
                 style: TextStyle(
                   color: AppColor.kLinkColor,
                   fontSize: 24,
@@ -171,7 +172,7 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
-            title: const Text('Select an account type'),
+            title: const Text(AppText.kSelectBankAccountType),
             children: <Widget>[
               for (var type in BankAccountType.values)
                 SimpleDialogOption(
@@ -195,7 +196,7 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
-            title: const Text('Select an account rate'),
+            title: const Text(AppText.kSelectCurrencyRate),
             children: <Widget>[
               for (var type in CurrencyType.values)
                 SimpleDialogOption(
@@ -244,5 +245,89 @@ class _EditBankAccountScreenState extends EditScreenState<EditBankAccountScreen>
       "${type.getLongName()} (${type.getSign()})",
       style: buildTextStyleForInput(),
     );
+  }
+
+  @override
+  void complete(BuildContext context) async {
+    var errors = <String>[];
+    if (_nameController.value.text?.isNotEmpty != true) {
+      errors.add(AppText.kBankNameLabel);
+    }
+    if (_bankAccountType == null) {
+      errors.add(AppText.kBankAccountTypeLabel);
+    }
+    if (_currencyType == null) {
+      errors.add(AppText.kCurrencyRateLabel);
+    }
+
+    if (errors.isNotEmpty) {
+      generateAlert(errors);
+    } else {
+      BankAccount bankAccount;
+      setState(() {
+        var name = _nameController.value.text;
+        var bankAccountType = _bankAccountType;
+        var currencyType = _currencyType;
+        if (widget.bankAccount != null) {
+          bankAccount = storageProvider.bankAccounts.firstWhere((e) => e.id == widget.bankAccount.id);
+          bankAccount.update(name, bankAccountType, currencyType);
+        } else {
+          bankAccount = BankAccount.newItem(name, bankAccountType, currencyType);
+          storageProvider.bankAccounts.add(bankAccount);
+        }
+
+        storageProvider.updateBankAccountList();
+      });
+
+      var navigator = Navigator.of(context);
+      if (widget.bankAccount != null) {
+        navigator.pop();
+      } else {
+        navigator.popAndPushNamed(AccountScreen.routeName, arguments: bankAccount);
+      }
+    }
+  }
+
+  void delete(BuildContext context) async {
+    var confirmed = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(AppText.kBankAccountRemovalConfirmation),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                  child: Text(
+                    "Cancel",
+                    style: buildStyleForAlert(),
+                  )),
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context, true);
+                  },
+                  child: Text(
+                    "OK",
+                    style: buildStyleForAlert(),
+                  )),
+            ],
+          );
+        });
+
+    if (confirmed) {
+      setState(() {
+        storageProvider.transactions.removeWhere((e) => e.bankAccountId == widget.bankAccount?.id);
+        storageProvider.bankAccounts.removeWhere((e) => e.id == widget.bankAccount?.id);
+        storageProvider.updateTransactionList();
+        storageProvider.updateBankAccountList();
+      });
+
+      var navigator = Navigator.of(context);
+      navigator.pop();
+      if (navigator.canPop()) {
+        navigator.pop();
+      }
+    }
   }
 }

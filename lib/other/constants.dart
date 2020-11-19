@@ -22,12 +22,31 @@ class AppText {
   static const kRecentChangesHeaderTitle = "Recent Changes";
   static const kNoBankAccounts = "You have no registered bank account";
   static const kNoTransactions = "You have no registered transaction";
+  static const kBankAccountLabel = "Bank Account";
+  static const kValueLabel = "Value";
+  static const kValueHint = "Enter a value";
+  static const kDateLabel = "Date";
+  static const kDescriptionLabel = "Description";
+  static const kDescriptionHint = "Enter a description";
+  static const kDeleteTransaction = "Delete This Change?";
+  static const kSelectBankAccount = "Select a bank account";
+  static const kBankNameLabel = "Name";
+  static const kBankNameHint = "Enter a name";
+  static const kBankAccountTypeLabel = "Account Type";
+  static const kCurrencyRateLabel = "Account Rate";
+  static const kDeleteBankAccount = "Delete This Bank Account?";
+  static const kSelectBankAccountType = "Select an account type";
+  static const kSelectCurrencyRate = "Select an account rate";
+  static const kEmptyField = "—";
+  static const kSomeFieldsAreMissed = "Some fields are missed";
+  static const kTransactionRemovalConfirmation = "Are you confirm change removal?";
+  static const kBankAccountRemovalConfirmation = "Are you confirm bank account removal?";
 }
 
 // Shared Preferences Keys
 class AppSharedKey {
   static const kCurrencyRatesLastDateUpdate = "currencyRatesLastDateUpdate";
   static const kActiveType = "activeType";
-  static const kTransactions = "Transactions";
-  static const kAccounts = "accounts";
+  static const kTransactions = "transactions";
+  static const kBankAccounts = "bankAccounts";
 }

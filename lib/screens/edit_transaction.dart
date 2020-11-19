@@ -1,6 +1,7 @@
 import 'package:first_app_finassistant/components/bank_account_row.dart';
 import 'package:first_app_finassistant/components/edit_screen_state.dart';
 import 'package:first_app_finassistant/entities/bank_account.dart';
+import 'package:first_app_finassistant/entities/money_value.dart';
 import 'package:first_app_finassistant/entities/transaction.dart';
 import 'package:first_app_finassistant/enums/currency_type.dart';
 import 'package:first_app_finassistant/other/constants.dart';
@@ -25,7 +26,8 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
   final _valueController = TextEditingController();
   final _descriptionController = TextEditingController();
   BankAccount _bankAccount;
-  DateTime _selectedDate;
+  CurrencyType _currencyType;
+  DateTime _date;
 
   @override
   void initState() {
@@ -45,7 +47,8 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
     } else if (widget.bankAccount != null) {
       _bankAccount = widget.bankAccount;
     }
-    _selectedDate = widget.transaction?.date;
+    _currencyType = widget.transaction?.value?.type ?? _bankAccount?.currencyType;
+    _date = widget.transaction?.date;
   }
 
   @override
@@ -67,7 +70,7 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Bank Account",
+              AppText.kBankAccountLabel,
               style: buildTextStyleForLabel(),
             ),
             InkWell(
@@ -80,7 +83,7 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
                     _bankAccount != null
                         ? getBankAccountDescription(context, _bankAccount)
                         : Text(
-                            "—",
+                            AppText.kEmptyField,
                             style: buildTextStyleForInput(),
                           ),
                     FaIcon(
@@ -101,7 +104,7 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Value",
+              AppText.kValueLabel,
               style: buildTextStyleForLabel(),
             ),
             TextField(
@@ -111,7 +114,7 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
               style: buildTextStyleForInput(),
               decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: 'Enter a value',
+                hintText: AppText.kValueHint,
               ),
               controller: _valueController,
             ),
@@ -124,7 +127,41 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Date",
+              AppText.kCurrencyRateLabel,
+              style: buildTextStyleForLabel(),
+            ),
+            InkWell(
+              onTap: () => _selectCurrencyType(context),
+              child: Padding(
+                padding: EdgeInsets.only(top: 10, bottom: 10, right: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _currencyType != null
+                        ? getCurrencyTypeDescription(_currencyType)
+                        : Text(
+                            AppText.kEmptyField,
+                            style: buildTextStyleForInput(),
+                          ),
+                    FaIcon(
+                      FontAwesomeIcons.moneyBillAlt,
+                      size: 24,
+                      color: AppColor.kLinkColor,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      Padding(
+        padding: EdgeInsets.only(top: 12.5, bottom: 12.5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              AppText.kDateLabel,
               style: buildTextStyleForLabel(),
             ),
             InkWell(
@@ -135,7 +172,7 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      _selectedDate != null ? DateFormat.yMd().format(_selectedDate) : "—",
+                      _date != null ? DateFormat.yMd().format(_date) : AppText.kEmptyField,
                       style: buildTextStyleForInput(),
                     ),
                     FaIcon(
@@ -156,7 +193,7 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Description",
+              AppText.kDescriptionLabel,
               style: buildTextStyleForLabel(),
             ),
             TextField(
@@ -165,7 +202,7 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
               style: buildTextStyleForInput(),
               decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: 'Enter a description',
+                hintText: AppText.kDescriptionHint,
               ),
               controller: _descriptionController,
             ),
@@ -188,9 +225,9 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
           child: Container(
             alignment: Alignment.center,
             child: TextButton(
-              onPressed: () {},
+              onPressed: () => delete(context),
               child: Text(
-                "Delete This Change?",
+                AppText.kDeleteTransaction,
                 style: TextStyle(
                   color: AppColor.kLinkColor,
                   fontSize: 24,
@@ -207,13 +244,7 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
   Row getBankAccountDescription(BuildContext context, BankAccount account) {
     return Row(
       children: [
-        Padding(
-          padding: EdgeInsets.only(right: 10),
-          child: Text(
-            "${account.currencyType.getSign()}",
-            style: buildTextStyleForInput(),
-          ),
-        ),
+
         SelectionBankAccountRow(
           context,
           account,
@@ -227,9 +258,9 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
-            title: const Text('Select a bank account'),
+            title: const Text(AppText.kSelectBankAccount),
             children: <Widget>[
-              for (var account in storageProvider.accounts)
+              for (var account in storageProvider.bankAccounts)
                 SimpleDialogOption(
                   onPressed: () {
                     Navigator.pop(context, account);
@@ -246,10 +277,34 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
       });
   }
 
+  _selectCurrencyType(BuildContext context) async {
+    final CurrencyType picked = await showDialog<CurrencyType>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text(AppText.kSelectCurrencyRate),
+            children: <Widget>[
+              for (var type in CurrencyType.values)
+                SimpleDialogOption(
+                  onPressed: () {
+                    Navigator.pop(context, type);
+                  },
+                  child: getCurrencyTypeDescription(type),
+                ),
+            ],
+          );
+        });
+
+    if (picked != null)
+      setState(() {
+        _currencyType = picked;
+      });
+  }
+
   _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
+      initialDate: _date ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
       builder: (context, child) {
@@ -262,9 +317,98 @@ class _EditTransactionScreenState extends EditScreenState<EditTransactionScreen>
       },
     );
 
-    if (picked != null && picked != _selectedDate)
+    if (picked != null && picked != _date)
       setState(() {
-        _selectedDate = picked;
+        _date = picked;
       });
+  }
+
+  Text getCurrencyTypeDescription(CurrencyType type) {
+    return Text(
+      "${type.getLongName()} (${type.getSign()})",
+      style: buildTextStyleForInput(),
+    );
+  }
+
+  @override
+  void complete(BuildContext context) async {
+    var errors = <String>[];
+    if (_bankAccount == null) {
+      errors.add(AppText.kBankAccountLabel);
+    }
+    if (_valueController.value.text?.isNotEmpty != true) {
+      errors.add(AppText.kValueLabel);
+    } else {
+      var result = double.parse(_valueController.value.text);
+      if (result > -0.00009 && result < 0.00009) {
+        errors.add(AppText.kValueLabel);
+      }
+    }
+    if (_currencyType == null) {
+      errors.add(AppText.kCurrencyRateLabel);
+    }
+    if (_date == null) {
+      errors.add(AppText.kDateLabel);
+    }
+
+    if (errors.isNotEmpty) {
+      generateAlert(errors);
+    } else {
+      setState(() {
+        var value = double.parse(_valueController.value.text);
+        var isIncome = !value.isNegative;
+        var bankAccountId = _bankAccount.id;
+        var moneyValue = MoneyValue(value.abs(), _currencyType);
+        var description = _descriptionController.value.text;
+        if (widget.transaction != null) {
+          var transaction = storageProvider.transactions.firstWhere((e) => e.id == widget.transaction.id);
+          transaction.update(isIncome, bankAccountId, moneyValue, _date, description);
+        } else {
+          var transaction = Transaction.newItem(isIncome, bankAccountId, moneyValue, _date, description);
+          storageProvider.transactions.add(transaction);
+        }
+
+        storageProvider.updateTransactionList();
+      });
+
+      Navigator.pop(context);
+    }
+  }
+
+  void delete(BuildContext context) async {
+    var confirmed = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(AppText.kTransactionRemovalConfirmation),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                  child: Text(
+                    "Cancel",
+                    style: buildStyleForAlert(),
+                  )),
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context, true);
+                  },
+                  child: Text(
+                    "OK",
+                    style: buildStyleForAlert(),
+                  )),
+            ],
+          );
+        });
+
+    if (confirmed) {
+      setState(() {
+        storageProvider.transactions.removeWhere((e) => e.id == widget.transaction?.id);
+        storageProvider.updateTransactionList();
+      });
+
+      Navigator.pop(context);
+    }
   }
 }

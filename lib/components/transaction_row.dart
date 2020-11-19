@@ -30,7 +30,6 @@ class TransactionRow extends BlockItemRow {
                 transaction.value,
                 isIncome: transaction.isIncome,
                 currencyTypeChangeKey: storageProvider.bankAccountsKey,
-                activeType: storageProvider.getBankAccount(transaction).currencyType,
               ),
             ),
             buildLineSeparator(context, EdgeInsets.only(top: 12, bottom: 16)),

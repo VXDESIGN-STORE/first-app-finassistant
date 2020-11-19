@@ -73,6 +73,7 @@ class _AccountScreenState extends State<AccountScreen> {
               activeType: _activeType,
               storageProvider: storageProvider,
               changeCurrencyType: _changeCurrencyType,
+              setState: setState,
             ),
           ),
           SliverList(
@@ -91,7 +92,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => EditTransactionScreen(transaction : transaction)),
-                              );
+                              ).then((value) => setState(() {}));
                             },
                             transaction: transaction,
                             storageProvider: storageProvider,
@@ -117,7 +118,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => EditTransactionScreen(bankAccount: widget.account)),
-                        );
+                        ).then((value) => setState(() {}));
                       },
                     ),
                   ),
@@ -140,6 +141,7 @@ class _AccountSliverAppBarDelegate extends SliverAppBarDelegate {
     CurrencyType activeType,
     StorageProvider storageProvider,
     Function(CurrencyType) changeCurrencyType,
+    Function(VoidCallback) setState,
   }) : super(
           headerHeight: headerHeight,
           header: AccountHeader(
@@ -167,8 +169,8 @@ class _AccountSliverAppBarDelegate extends SliverAppBarDelegate {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => EditBankAccountScreen(account: account)),
-                );
+                  MaterialPageRoute(builder: (context) => EditBankAccountScreen(bankAccount: account)),
+                ).then((value) => setState(() {}));
               },
             ),
             account: account,

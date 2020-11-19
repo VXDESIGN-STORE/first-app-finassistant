@@ -65,7 +65,7 @@ class _IncomeOutcomeScreenState extends State<IncomeOutcomeScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => EditTransactionScreen(transaction: transaction)),
-                              );
+                              ).then((value) => setState(() {}));
                             },
                             transaction: transaction,
                             storageProvider: storageProvider,
@@ -91,7 +91,7 @@ class _IncomeOutcomeScreenState extends State<IncomeOutcomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => EditTransactionScreen()),
-                        );
+                        ).then((value) => setState(() {}));
                       },
                     ),
                   ),

@@ -9,7 +9,6 @@ import 'package:first_app_finassistant/entities/transaction.dart';
 import 'package:first_app_finassistant/other/constants.dart';
 import 'package:first_app_finassistant/other/currency_rates.dart';
 import 'package:first_app_finassistant/other/storage.dart';
-import 'package:first_app_finassistant/screens/account.dart';
 import 'package:first_app_finassistant/screens/edit_bank_account.dart';
 import 'package:first_app_finassistant/screens/income_outcome.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +41,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
     _loadingFlag = Future.value(true);
 
     setState(() {
-      storageProvider.setData(preferences);
+      storageProvider.initData(preferences);
 
       storageProvider.regenerateCurrencyTypeChangeKey();
       storageProvider.regenerateBankAccountChangeKey();
@@ -117,8 +116,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                           width: MediaQuery.of(context).size.width,
                           title: AppText.kBankAccountsHeaderTitle,
                           items: [
-                            if (storageProvider.accounts?.isNotEmpty == true)
-                              for (var account in storageProvider.accounts)
+                            if (storageProvider.bankAccounts?.isNotEmpty == true)
+                              for (var account in storageProvider.bankAccounts)
                                 BlockItemRow(
                                   onTap: () {
                                     Navigator.pushNamed(
@@ -172,7 +171,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => EditBankAccountScreen()),
-                              );
+                              ).then((value) => setState(() {}));
                             },
                           ),
                         ),

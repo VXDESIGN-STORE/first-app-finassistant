@@ -1,6 +1,7 @@
 import 'package:first_app_finassistant/components/marquee_text.dart';
 import 'package:first_app_finassistant/entities/bank_account.dart';
 import 'package:first_app_finassistant/enums/bank_account_type.dart';
+import 'package:first_app_finassistant/enums/currency_type.dart';
 import 'package:first_app_finassistant/other/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -15,6 +16,17 @@ abstract class BankAccountRow extends Row {
     double spaceSize = 10,
   }) : super(
           children: [
+            Padding(
+              padding: EdgeInsets.only(right: spaceSize),
+              child: Text(
+                account.currencyType.getSign(),
+                style: TextStyle(
+                  color: AppColor.kTextOnLightColor,
+                  fontSize: textFontSize,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
             Padding(
               padding: EdgeInsets.only(right: spaceSize),
               child: FaIcon(
@@ -51,7 +63,7 @@ class HeaderBankAccountRow extends BankAccountRow {
     BankAccount account, {
     Key key,
   }) : super(
-          MediaQuery.of(context).size.width - 100,
+          MediaQuery.of(context).size.width - 130,
           account,
           key: key,
           iconFontSize: 28,
@@ -65,7 +77,7 @@ class TitleBankAccountRow extends BankAccountRow {
     BankAccount account, {
     Key key,
   }) : super(
-          MediaQuery.of(context).size.width - 200,
+          MediaQuery.of(context).size.width - 230,
           account,
           key: key,
           iconFontSize: 28,
@@ -79,7 +91,7 @@ class BlockBankAccountRow extends BankAccountRow {
     BankAccount account, {
     Key key,
   }) : super(
-          MediaQuery.of(context).size.width - 200,
+          MediaQuery.of(context).size.width - 230,
           account,
           key: key,
         );
@@ -87,14 +99,14 @@ class BlockBankAccountRow extends BankAccountRow {
 
 class SelectionBankAccountRow extends BankAccountRow {
   SelectionBankAccountRow(
-      BuildContext context,
-      BankAccount account, {
-        Key key,
-      }) : super(
-    MediaQuery.of(context).size.width - 300,
-    account,
-    key: key,
-    iconFontSize: 28,
-    textFontSize: 24,
-  );
+    BuildContext context,
+    BankAccount account, {
+    Key key,
+  }) : super(
+          MediaQuery.of(context).size.width - 250,
+          account,
+          key: key,
+          iconFontSize: 28,
+          textFontSize: 24,
+        );
 }

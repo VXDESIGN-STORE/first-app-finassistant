@@ -1,6 +1,5 @@
 import 'package:first_app_finassistant/other/constants.dart';
 import 'package:first_app_finassistant/other/storage.dart';
-import 'package:first_app_finassistant/screens/account.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -10,6 +9,16 @@ abstract class EditScreenState<T extends StatefulWidget> extends State<T> {
   String get keyPrefix;
 
   List<Widget> getWidgets(BuildContext context);
+
+  void complete(BuildContext context);
+
+  @override
+  void initState() {
+    super.initState();
+
+    storageProvider.regenerateCurrencyTypeChangeKey();
+    storageProvider.regenerateBankAccountChangeKey();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +50,7 @@ abstract class EditScreenState<T extends StatefulWidget> extends State<T> {
                       size: 24,
                       color: AppColor.kLinkColor,
                     ),
-                    onPressed: () {
-                      Navigator.of(context).popAndPushNamed(AccountScreen.routeName, arguments: storageProvider.accounts[1]);
-                    },
+                    onPressed: () => complete(context),
                   ),
                 ],
               ),
@@ -80,5 +87,36 @@ abstract class EditScreenState<T extends StatefulWidget> extends State<T> {
       fontSize: 24,
       fontWeight: FontWeight.w700,
     );
+  }
+
+  @protected
+  TextStyle buildStyleForAlert() {
+    return TextStyle(
+      color: AppColor.kLinkColor,
+      fontSize: 18,
+      fontWeight: FontWeight.w500,
+    );
+  }
+
+  @protected
+  void generateAlert(List<String> errors) async {
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(AppText.kSomeFieldsAreMissed),
+            content: Text("Before saving the data, complete the following fields:\n\n – ${errors.join(";\n – ")}."),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "OK",
+                    style: buildStyleForAlert(),
+                  )),
+            ],
+          );
+        });
   }
 }

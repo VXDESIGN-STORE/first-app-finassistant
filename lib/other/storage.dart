@@ -17,7 +17,7 @@ class StorageProvider {
   Key _currencyTypeChangeKey = generateCurrencyTypeChangeKey();
   Key _bankAccountsKey = generateBankAccountChangeKey();
 
-  List<BankAccount> get accounts => _accounts;
+  List<BankAccount> get bankAccounts => _accounts;
 
   List<Transaction> get transactions => _transactions;
 
@@ -39,28 +39,28 @@ class StorageProvider {
 
   static StorageProvider getInstance() => _storageProvider ??= new StorageProvider._();
 
-  setData(SharedPreferences preferences) {
+  initData(SharedPreferences preferences) {
     summaryType = CurrencyType.values[(preferences.getInt(AppSharedKey.kActiveType) ?? 0)];
-    // _accounts = preferences.getStringList(AppSharedKey.kAccounts)?.map(BankAccount.fromJson)?.toList() ?? [];
-    // _transactions = preferences.getStringList(AppSharedKey.kTransactions)?.map(Transaction.fromJson)?.toList() ?? [];
-    _accounts = [
-      BankAccount.stub("Sberbank", BankAccountType.CARD, CurrencyType.RUR),
-      BankAccount.stub("Tinkoff", BankAccountType.DEPOSIT, CurrencyType.EUR),
-      BankAccount.stub("Alfa-Bank", null, CurrencyType.USD),
-      BankAccount.stub("Gazprombank", BankAccountType.CARD, CurrencyType.RUR),
-      BankAccount.stub("VTB", BankAccountType.CARD, CurrencyType.RUR),
-      BankAccount.stub("bchbsdjka daksndkjabsd daksnjd", BankAccountType.CARD, CurrencyType.RUR),
-    ];
-    _transactions = [
-      Transaction.newItem(true, _accounts[0].id, MoneyValue(520, CurrencyType.RUR), DateTime.now().add(Duration(days: -1)), '''Lorem ipsum dolor sit amet,
-consectetur adipiscing elit,
-sed do eiusmod tempor
-incididunt ut labore et dolore
-magna aliqua.'''),
-      Transaction.newItem(true, _accounts[1].id, MoneyValue(5, CurrencyType.EUR), DateTime.now().add(Duration(days: -2)), "Interest income"),
-      Transaction.newItem(false, _accounts[0].id, MoneyValue(225, CurrencyType.RUR), DateTime.now(), "Purchase"),
-      Transaction.newItem(false, _accounts[0].id, MoneyValue(10, CurrencyType.RUR), DateTime.now(), null),
-    ];
+    _accounts = preferences.getStringList(AppSharedKey.kBankAccounts)?.map(BankAccount.fromJson)?.toList() ?? [];
+    _transactions = preferences.getStringList(AppSharedKey.kTransactions)?.map(Transaction.fromJson)?.toList() ?? [];
+//     _accounts = [
+//       BankAccount.stub("Sberbank", BankAccountType.CARD, CurrencyType.RUR),
+//       BankAccount.stub("Tinkoff", BankAccountType.DEPOSIT, CurrencyType.EUR),
+//       BankAccount.stub("Alfa-Bank", null, CurrencyType.USD),
+//       BankAccount.stub("Gazprombank", BankAccountType.CARD, CurrencyType.RUR),
+//       BankAccount.stub("VTB", BankAccountType.CARD, CurrencyType.RUR),
+//       BankAccount.stub("bchbsdjka daksndkjabsd daksnjd", BankAccountType.CARD, CurrencyType.RUR),
+//     ];
+//     _transactions = [
+//       Transaction.newItem(true, _accounts[0].id, MoneyValue(520, CurrencyType.RUR), DateTime.now().add(Duration(days: -1)), '''Lorem ipsum dolor sit amet,
+// consectetur adipiscing elit,
+// sed do eiusmod tempor
+// incididunt ut labore et dolore
+// magna aliqua.'''),
+//       Transaction.newItem(true, _accounts[1].id, MoneyValue(5, CurrencyType.EUR), DateTime.now().add(Duration(days: -2)), "Interest income"),
+//       Transaction.newItem(false, _accounts[0].id, MoneyValue(225, CurrencyType.RUR), DateTime.now(), "Purchase"),
+//       Transaction.newItem(false, _accounts[0].id, MoneyValue(10, CurrencyType.RUR), DateTime.now(), null),
+//     ];
   }
 
   static Key generateCurrencyTypeChangeKey() {
@@ -92,5 +92,15 @@ magna aliqua.'''),
 
   BankAccount getBankAccount(Transaction transaction) {
     return _accounts.firstWhere((account) => account.id == transaction.bankAccountId);
+  }
+
+  updateTransactionList() async {
+    var preferences = await SharedPreferences.getInstance();
+    preferences.setStringList(AppSharedKey.kTransactions, transactions.map((e) => e.toJson()).toList());
+  }
+
+  updateBankAccountList() async {
+    var preferences = await SharedPreferences.getInstance();
+    preferences.setStringList(AppSharedKey.kBankAccounts, bankAccounts.map((e) => e.toJson()).toList());
   }
 }
