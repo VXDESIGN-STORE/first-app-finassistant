@@ -9,6 +9,7 @@ import 'package:first_app_finassistant/entities/transaction.dart';
 import 'package:first_app_finassistant/other/constants.dart';
 import 'package:first_app_finassistant/other/currency_rates.dart';
 import 'package:first_app_finassistant/other/storage.dart';
+import 'package:first_app_finassistant/screens/account.dart';
 import 'package:first_app_finassistant/screens/edit_bank_account.dart';
 import 'package:first_app_finassistant/screens/income_outcome.dart';
 import 'package:flutter/material.dart';
@@ -120,10 +121,9 @@ class _SummaryScreenState extends State<SummaryScreen> {
                               for (var account in storageProvider.bankAccounts)
                                 BlockItemRow(
                                   onTap: () {
-                                    Navigator.pushNamed(
+                                    Navigator.push(
                                       context,
-                                      "/bankAccount",
-                                      arguments: account
+                                      MaterialPageRoute(builder: (context) => AccountScreen(account: account)),
                                     ).then((value) => setState(() {}));
                                   },
                                   children: [

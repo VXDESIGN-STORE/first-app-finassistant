@@ -3,6 +3,7 @@ import 'package:first_app_finassistant/entities/bank_account.dart';
 import 'package:first_app_finassistant/enums/bank_account_type.dart';
 import 'package:first_app_finassistant/enums/currency_type.dart';
 import 'package:first_app_finassistant/other/constants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 

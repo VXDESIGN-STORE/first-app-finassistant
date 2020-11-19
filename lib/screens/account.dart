@@ -178,15 +178,10 @@ class _AccountSliverAppBarDelegate extends SliverAppBarDelegate {
             activeType: activeType,
             changeCurrencyType: changeCurrencyType,
           ),
-          pinnedTitle: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TitleBankAccountRow(
-                context,
-                account,
-                key: storageProvider.bankAccountsKey,
-              ),
-            ],
+          pinnedTitle: TitleBankAccountRow(
+            context,
+            account,
+            key: storageProvider.bankAccountsKey,
           ),
         );
 }
