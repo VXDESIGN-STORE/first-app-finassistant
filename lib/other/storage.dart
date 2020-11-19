@@ -44,12 +44,12 @@ class StorageProvider {
     // _accounts = preferences.getStringList(AppSharedKey.kAccounts)?.map(BankAccount.fromJson)?.toList() ?? [];
     // _transactions = preferences.getStringList(AppSharedKey.kTransactions)?.map(Transaction.fromJson)?.toList() ?? [];
     _accounts = [
-      BankAccount.newItem("Sberbank", BankAccountType.CARD, CurrencyType.RUR),
-      BankAccount.newItem("Tinkoff", BankAccountType.DEPOSIT, CurrencyType.EUR),
-      BankAccount.newItem("Alfa-Bank", null, CurrencyType.USD),
-      BankAccount.newItem("Gazprombank", BankAccountType.CARD, CurrencyType.RUR),
-      BankAccount.newItem("VTB", BankAccountType.CARD, CurrencyType.RUR),
-      BankAccount.newItem("bchbsdjka daksndkjabsd daksnjd", BankAccountType.CARD, CurrencyType.RUR),
+      BankAccount.stub("Sberbank", BankAccountType.CARD, CurrencyType.RUR),
+      BankAccount.stub("Tinkoff", BankAccountType.DEPOSIT, CurrencyType.EUR),
+      BankAccount.stub("Alfa-Bank", null, CurrencyType.USD),
+      BankAccount.stub("Gazprombank", BankAccountType.CARD, CurrencyType.RUR),
+      BankAccount.stub("VTB", BankAccountType.CARD, CurrencyType.RUR),
+      BankAccount.stub("bchbsdjka daksndkjabsd daksnjd", BankAccountType.CARD, CurrencyType.RUR),
     ];
     _transactions = [
       Transaction.newItem(true, _accounts[0].id, MoneyValue(520, CurrencyType.RUR), DateTime.now().add(Duration(days: -1)), '''Lorem ipsum dolor sit amet,

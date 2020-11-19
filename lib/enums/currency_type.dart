@@ -18,6 +18,19 @@ extension CurrencyTypeExtension on CurrencyType {
     }
   }
 
+  String getLongName() {
+    switch (this) {
+      case CurrencyType.RUR:
+        return "Russian Ruble";
+      case CurrencyType.USD:
+        return "Dollar US";
+      case CurrencyType.EUR:
+        return "Euro";
+      default:
+        return "";
+    }
+  }
+
   String getSign() {
     switch (this) {
       case CurrencyType.RUR:

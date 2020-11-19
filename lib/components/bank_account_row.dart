@@ -18,7 +18,7 @@ abstract class BankAccountRow extends Row {
             Padding(
               padding: EdgeInsets.only(right: spaceSize),
               child: FaIcon(
-                getIcon(account),
+                account.bankAccountType.getIcon(),
                 size: iconFontSize,
                 color: AppColor.kTextOnLightColor,
               ),
@@ -43,12 +43,6 @@ abstract class BankAccountRow extends Row {
             ),
           ],
         );
-
-  static IconData getIcon(BankAccount account) {
-    if (account.bankAccountType == BankAccountType.CARD) return FontAwesomeIcons.creditCard;
-    if (account.bankAccountType == BankAccountType.DEPOSIT) return FontAwesomeIcons.university;
-    return FontAwesomeIcons.questionCircle;
-  }
 }
 
 class HeaderBankAccountRow extends BankAccountRow {
@@ -89,4 +83,18 @@ class BlockBankAccountRow extends BankAccountRow {
           account,
           key: key,
         );
+}
+
+class SelectionBankAccountRow extends BankAccountRow {
+  SelectionBankAccountRow(
+      BuildContext context,
+      BankAccount account, {
+        Key key,
+      }) : super(
+    MediaQuery.of(context).size.width - 300,
+    account,
+    key: key,
+    iconFontSize: 28,
+    textFontSize: 24,
+  );
 }

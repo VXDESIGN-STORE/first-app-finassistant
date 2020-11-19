@@ -1,5 +1,6 @@
 import 'package:first_app_finassistant/other/constants.dart';
 import 'package:first_app_finassistant/other/money_value_number_style.dart';
+import 'package:first_app_finassistant/screens/account.dart';
 import 'package:first_app_finassistant/screens/summary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: AppText.kApplicationTitle,
+      routes: <String, WidgetBuilder>{
+        AccountScreen.routeName: (BuildContext context) => AccountScreen(account: ModalRoute.of(context).settings.arguments),
+      },
       theme: ThemeData(scaffoldBackgroundColor: AppColor.kBackgroundMainAppColor),
       home: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.dark,

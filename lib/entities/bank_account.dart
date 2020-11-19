@@ -12,7 +12,9 @@ class BankAccount {
 
   BankAccount(this._id, this._name, this._bankAccountType, this._currencyType);
 
-  BankAccount.newItem(this._name, this._bankAccountType, this._currencyType) : this._id = UniqueKey().toString();
+  BankAccount.newItem() : this._id = UniqueKey().toString();
+
+  BankAccount.stub(this._name, this._bankAccountType, this._currencyType) : this._id = UniqueKey().toString();
 
   String get id => _id;
 

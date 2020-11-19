@@ -121,13 +121,10 @@ class _SummaryScreenState extends State<SummaryScreen> {
                               for (var account in storageProvider.accounts)
                                 BlockItemRow(
                                   onTap: () {
-                                    Navigator.push(
+                                    Navigator.pushNamed(
                                       context,
-                                      MaterialPageRoute(
-                                        builder: (context) => AccountScreen(
-                                          account: account,
-                                        ),
-                                      ),
+                                      "/bankAccount",
+                                      arguments: account
                                     ).then((value) => setState(() {}));
                                   },
                                   children: [
